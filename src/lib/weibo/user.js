@@ -124,7 +124,9 @@ let deal = async (ctx) => {
 	});
 	// ctx.header('Content-Type', 'application/xml');
 	// return ctx.body(renderRss2(finalData));
-	return ctx.json(finalData);
+	return ctx.json(decodeURIComponent(finalData).replace(/\\u([0-9a-fA-F]{4})/g, (match, grp) => {
+	    return String.fromCharCode(parseInt(grp, 16));
+	}));
 };
 
 let setup = (route) => {
