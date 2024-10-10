@@ -115,16 +115,21 @@ let deal = async (ctx) => {
 		resultItems = ordinaryItems;
 	}
 
-	// 遍历每个对象，对 `a` 属性执行解码操作
+	// 遍历每个对象，对 `description` 属性执行解码操作
 	resultItems = resultItems.map(item => {
-	  if (typeof item.description === 'string') {
-	    // 使用decodeURIComponent和Unicode处理description属性
-	    let decodedData = decodeURIComponent(item.description).replace(/\\u([0-9a-fA-F]{4})/g, (match, grp) => {
-	      return String.fromCharCode(parseInt(grp, 16));
-	    });
-	    return { ...item, description: decodedData };  // 将解码后的a属性赋值回去
-	  }
-	  return item;
+	    if (typeof item.description === 'string') {
+	        try {
+	            // 使用 decodeURIComponent 和 Unicode 处理 description 属性
+	            let decodedData = decodeURIComponent(item.description).replace(/\\u([0-9a-fA-F]{4})/g, (match, grp) => {
+	                return String.fromCharCode(parseInt(grp, 16));
+	            });
+	            return { ...item, description: decodedData };  // 将解码后的 description 属性赋值回去
+	        } catch (e) {
+	            console.error(`Failed to decode URI component: ${item.description}`, e);
+	            return item; // 出现错误时，保留原始数据
+	        }
+	    }
+	    return item;
 	});
 	
 	const finalData = weiboUtils.sinaimgTvax({
