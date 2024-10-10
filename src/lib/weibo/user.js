@@ -115,6 +115,18 @@ let deal = async (ctx) => {
 		resultItems = ordinaryItems;
 	}
 
+	// 遍历每个对象，对 `a` 属性执行解码操作
+	resultItems = resultItems.map(item => {
+	  if (typeof item.description === 'string') {
+	    // 使用decodeURIComponent和Unicode处理description属性
+	    let decodedData = decodeURIComponent(item.description).replace(/\\u([0-9a-fA-F]{4})/g, (match, grp) => {
+	      return String.fromCharCode(parseInt(grp, 16));
+	    });
+	    return { ...item, description: decodedData };  // 将解码后的a属性赋值回去
+	  }
+	  return item;
+	});
+	
 	const finalData = weiboUtils.sinaimgTvax({
 		title: `${name}的微博`,
 		link: `https://weibo.com/${uid}/`,
@@ -124,7 +136,7 @@ let deal = async (ctx) => {
 	});
 	// ctx.header('Content-Type', 'application/xml');
 	// return ctx.body(renderRss2(finalData));
-	return ctx.json(decodeObjectProperties(finalData));
+	return ctx.json(finalData);
 };
 
 let setup = (route) => {
@@ -133,27 +145,5 @@ let setup = (route) => {
 
 export default { setup };
 
-function decodeObject(str) {
-  let decodedData = decodeURIComponent(str).replace(/\\u([0-9a-fA-F]{4})/g, (match, grp) => {
-    return String.fromCharCode(parseInt(grp, 16));
-  });
-  return decodedData;
-}
 
 
-function decodeObjectProperties(obj) {
-  // 使用递归遍历对象的所有属性
-  for (let key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      // 如果是字符串，进行decodeURIComponent解码
-      if (typeof obj[key] === 'string') {
-        obj[key] = decodeObject(obj[key]);
-      }
-      // 如果是对象或数组，递归处理
-      else if (typeof obj[key] === 'object' && obj[key] !== null) {
-        decodeObjectProperties(obj[key]);
-      }
-    }
-  }
-  return obj;
-}
