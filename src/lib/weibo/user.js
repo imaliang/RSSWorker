@@ -124,9 +124,7 @@ let deal = async (ctx) => {
 	});
 	// ctx.header('Content-Type', 'application/xml');
 	// return ctx.body(renderRss2(finalData));
-	return ctx.json(decodeURIComponent(finalData).replace(/\\u([0-9a-fA-F]{4})/g, (match, grp) => {
-	    return String.fromCharCode(parseInt(grp, 16));
-	}));
+	return ctx.json(decodeObjectProperties(finalData));
 };
 
 let setup = (route) => {
@@ -134,3 +132,28 @@ let setup = (route) => {
 };
 
 export default { setup };
+
+function decodeObject(str) {
+  let decodedData = decodeURIComponent(str).replace(/\\u([0-9a-fA-F]{4})/g, (match, grp) => {
+    return String.fromCharCode(parseInt(grp, 16));
+  });
+  return decodedData;
+}
+
+
+function decodeObjectProperties(obj) {
+  // 使用递归遍历对象的所有属性
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      // 如果是字符串，进行decodeURIComponent解码
+      if (typeof obj[key] === 'string') {
+        obj[key] = decodeObject(obj[key]);
+      }
+      // 如果是对象或数组，递归处理
+      else if (typeof obj[key] === 'object' && obj[key] !== null) {
+        decodeObjectProperties(obj[key]);
+      }
+    }
+  }
+  return obj;
+}
