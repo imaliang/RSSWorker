@@ -122,7 +122,7 @@ let deal = async (ctx) => {
 		image: profileImageUrl,
 		items: resultItems,
 	});
-	ctx.header('Content-Type', 'application/xml');
+	// ctx.header('Content-Type', 'application/xml');
 	// return ctx.body(renderRss2(finalData));
 	return ctx.json(finalData);
 };
