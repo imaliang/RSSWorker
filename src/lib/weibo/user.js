@@ -123,7 +123,8 @@ let deal = async (ctx) => {
 		items: resultItems,
 	});
 	ctx.header('Content-Type', 'application/xml');
-	return ctx.body(renderRss2(finalData));
+	// return ctx.body(renderRss2(finalData));
+	return ctx.json(finalData);
 };
 
 let setup = (route) => {
