@@ -9,9 +9,8 @@ let renderAtom = (content) => {
 };
 
 let renderRss2 = (content) => {
-	// let renderedText = mustache.render(rss2Template, content);
-	// return renderedText;
-	return JSON.stringify(content);
+	let renderedText = mustache.render(rss2Template, content);
+	return renderedText;
 };
 
 export { renderAtom, renderRss2 };
